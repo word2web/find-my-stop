@@ -1,0 +1,32 @@
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node
+node_modules/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+
+# Compiled files
+*.out
+*.o
+*.class
+*.exe 
