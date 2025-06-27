@@ -12,6 +12,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+<<<<<<< HEAD
   },
   build: {
     outDir: 'dist',
@@ -20,5 +21,7 @@ export default defineConfig({
         manualChunks: undefined
       }
     }
+=======
+>>>>>>> 5666f1c1d65ead5fa76731fab6845065e3b83327
   }
 })
