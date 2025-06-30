@@ -24,6 +24,15 @@ export default async function handler(req, res) {
   try {
     console.log('Geocoding postcode:', postcode);
     
+    // Check environment variables
+    const appId = process.env.TRANSPORT_API_APP_ID;
+    const appKey = process.env.TRANSPORT_API_APP_KEY;
+    
+    if (!appId || !appKey) {
+      console.error('Missing environment variables:', { appId: !!appId, appKey: !!appKey });
+      return res.status(500).json({ error: 'API configuration error - missing credentials' });
+    }
+    
     // 1. Geocode postcode
     const geoRes = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}`);
     const geoData = await geoRes.json();
@@ -37,10 +46,7 @@ export default async function handler(req, res) {
     const { latitude, longitude } = geoData.result;
     console.log('Coordinates:', { latitude, longitude });
 
-    // 2. Fetch nearby transport stops using NaPTAN API
-    // Using a radius of 2km (2000m) to find nearby stops
-    const appId = process.env.TRANSPORT_API_APP_ID;
-    const appKey = process.env.TRANSPORT_API_APP_KEY;
+    // 2. Fetch nearby transport stops using TransportAPI
     const transportUrl = `https://transportapi.com/v3/uk/places.json?lat=${latitude}&lon=${longitude}&radius=2000&type=bus_stop,train_station&limit=10&app_id=${appId}&app_key=${appKey}`;
     
     console.log('Fetching transport from:', transportUrl);
@@ -48,7 +54,13 @@ export default async function handler(req, res) {
     const transportRes = await fetch(transportUrl);
     const transportData = await transportRes.json();
 
+    console.log('TransportAPI response status:', transportRes.status);
     console.log('TransportAPI response:', JSON.stringify(transportData, null, 2));
+
+    if (transportData.error) {
+      console.error('TransportAPI error:', transportData.error);
+      return res.status(500).json({ error: `Transport API error: ${transportData.error}` });
+    }
 
     if (!transportData.member || !Array.isArray(transportData.member) || transportData.member.length === 0) {
       return res.status(404).json({ error: 'No transport stops found' });
@@ -69,10 +81,11 @@ export default async function handler(req, res) {
       }
     }));
 
+    console.log('Returning', stops.length, 'stops');
     return res.status(200).json({ transportStops: stops });
 
   } catch (error) {
     console.error('Error fetching transport stops:', error);
-    return res.status(500).json({ error: 'An error occurred while fetching transport stops' });
+    return res.status(500).json({ error: 'An error occurred while fetching transport stops: ' + error.message });
   }
 }
