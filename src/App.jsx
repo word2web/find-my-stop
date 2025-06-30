@@ -51,7 +51,7 @@ function App() {
           placeholder="Enter UK postcode"
           required
         />
-        <button type="submit" disabled={loading}>Find Transport</button>
+        <button type="submit" disabled={loading}>Find my stop!</button>
       </form>
       
       {loading && <p className="loading">🔍 Searching for transport stops...</p>}
