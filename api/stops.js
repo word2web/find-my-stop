@@ -48,11 +48,28 @@ export default async function handler(req, res) {
     const transportRes = await fetch(transportUrl);
     const transportData = await transportRes.json();
 
-    if (!transportData.places) {
+    console.log('TransportAPI response:', JSON.stringify(transportData, null, 2));
+
+    if (!transportData.member || !Array.isArray(transportData.member) || transportData.member.length === 0) {
       return res.status(404).json({ error: 'No transport stops found' });
     }
 
-    // Transform transportData.places into your desired format and return it
+    // Transform the TransportAPI data to match frontend expectations
+    const stops = transportData.member.map(stop => ({
+      type: "Feature",
+      geometry: {
+        type: "Point",
+        coordinates: [stop.longitude, stop.latitude]
+      },
+      properties: {
+        name: stop.name,
+        type: stop.type,
+        distance: stop.distance ? `${(stop.distance / 1000).toFixed(1)} km` : "Unknown",
+        services: stop.atcocode ? [stop.atcocode] : []
+      }
+    }));
+
+    return res.status(200).json({ transportStops: stops });
 
   } catch (error) {
     console.error('Error fetching transport stops:', error);

@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import stopsHandler from './api/stops.js';
+import 'dotenv/config';
 
 const app = express();
 

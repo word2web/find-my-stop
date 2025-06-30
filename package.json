@@ -7,15 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-<<<<<<< HEAD
     "preview": "vite preview",
     "vercel-build": "vite build"
-=======
-    "preview": "vite preview"
->>>>>>> 5666f1c1d65ead5fa76731fab6845065e3b83327
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
     "express": "^5.1.0",
     "node-fetch": "^3.3.2",
     "react": "^19.1.0",
