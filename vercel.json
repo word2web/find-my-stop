@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "version": 2,
   "builds": [
     {
@@ -22,7 +21,6 @@
     {
       "src": "/(.*)",
       "dest": "/index.html"
-=======
   "functions": {
     "api/postboxes.js": {
       "runtime": "nodejs18.x"
@@ -32,7 +30,6 @@
     {
       "source": "/api/(.*)",
       "destination": "/api/$1"
->>>>>>> 5666f1c1d65ead5fa76731fab6845065e3b83327
     }
   ]
 } 
