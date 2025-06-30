@@ -39,88 +39,23 @@ export default async function handler(req, res) {
 
     // 2. Fetch nearby transport stops using NaPTAN API
     // Using a radius of 2km (2000m) to find nearby stops
-    const transportUrl = `https://transportapi.com/v3/uk/places.json?lat=${latitude}&lon=${longitude}&radius=2000&type=bus_stop,train_station&limit=10&app_id=YOUR_APP_ID&app_key=YOUR_APP_KEY`;
+    const appId = process.env.TRANSPORT_API_APP_ID;
+    const appKey = process.env.TRANSPORT_API_APP_KEY;
+    const transportUrl = `https://transportapi.com/v3/uk/places.json?lat=${latitude}&lon=${longitude}&radius=2000&type=bus_stop,train_station&limit=10&app_id=${appId}&app_key=${appKey}`;
     
     console.log('Fetching transport from:', transportUrl);
     
-    // For now, let's use a mock response since we need API keys
-    // TODO: Get proper API keys for transportapi.com or use alternative
-    const mockTransportStops = [
-      {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [longitude + 0.001, latitude + 0.001]
-        },
-        properties: {
-          name: "Wishaw Bus Station",
-          type: "bus_stop",
-          distance: "0.1 km",
-          services: ["1", "2", "3", "240", "241"]
-        }
-      },
-      {
-        type: "Feature", 
-        geometry: {
-          type: "Point",
-          coordinates: [longitude - 0.002, latitude - 0.001]
-        },
-        properties: {
-          name: "Wishaw Railway Station",
-          type: "train_station",
-          distance: "0.3 km",
-          services: ["Glasgow Central", "Edinburgh Waverley"]
-        }
-      },
-      {
-        type: "Feature",
-        geometry: {
-          type: "Point", 
-          coordinates: [longitude + 0.003, latitude]
-        },
-        properties: {
-          name: "Main Street Bus Stop",
-          type: "bus_stop",
-          distance: "0.5 km",
-          services: ["1", "2", "4"]
-        }
-      },
-      {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [longitude - 0.001, latitude + 0.002]
-        },
-        properties: {
-          name: "Station Road Bus Stop",
-          type: "bus_stop", 
-          distance: "0.7 km",
-          services: ["240", "241", "242"]
-        }
-      },
-      {
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [longitude + 0.004, latitude - 0.001]
-        },
-        properties: {
-          name: "High Street Bus Stop",
-          type: "bus_stop",
-          distance: "1.2 km", 
-          services: ["1", "3", "5"]
-        }
-      }
-    ];
+    const transportRes = await fetch(transportUrl);
+    const transportData = await transportRes.json();
 
-    // 3. Return the transport stops data
-    res.status(200).json({
-      transportStops: mockTransportStops,
-      location: geoData.result
-    });
+    if (!transportData.places) {
+      return res.status(404).json({ error: 'No transport stops found' });
+    }
+
+    // Transform transportData.places into your desired format and return it
 
   } catch (error) {
-    console.error('API Error:', error);
-    res.status(500).json({ error: 'Internal server error: ' + error.message });
+    console.error('Error fetching transport stops:', error);
+    return res.status(500).json({ error: 'An error occurred while fetching transport stops' });
   }
-} 
+}
