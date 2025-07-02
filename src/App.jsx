@@ -41,7 +41,7 @@ function App() {
   return (
     <div className="container">
       <h1>🚌 UK Public Transport Finder</h1>
-      <p className="subtitle">Find nearestbus stops and train stations</p>
+      <p className="subtitle">Find your nearestbus stops and train stations</p>
       
       <form onSubmit={handleSubmit} className="postcode-form">
         <input

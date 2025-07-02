@@ -1,6 +1,6 @@
 # 🚌 Find My Stop
 
-A React application that helps you find nearby bus stops and train stations by entering a UK postcode.
+A wee React application that helps you find your nearest bus stops and train stations by entering a UK postcode.
 
 ## Features
 
@@ -37,19 +37,19 @@ A React application that helps you find nearby bus stops and train stations by e
 3. **Frontend**: React app with modern, responsive UI
 4. **Backend**: Express server handling API requests
 
-## TODO
+## TODO (MAYBE)
 
-- [ ] Integrate with real transport APIs (TransportAPI, NaPTAN, etc.)
-- [ ] Add real-time departure information
-- [ ] Include more transport types (trams, underground, etc.)
+- [ ] Include more transport types, if applicable (trams, underground, etc.)
 - [ ] Add filtering by transport type
 - [ ] Implement distance-based sorting
+- [ ] Add optional automatic geolocation feature
+- [ ] Filter results to include at least one train station
 
 ## Technologies Used
 
 - **Frontend**: React 19, Vite
 - **Backend**: Express.js, Node.js
-- **APIs**: postcodes.io (geocoding)
+- **APIs**: postcodes.io (geocoding), transportapi.com (UK public transport information)
 - **Styling**: CSS3 with responsive design
 
 ## API Endpoints
@@ -59,3 +59,6 @@ A React application that helps you find nearby bus stops and train stations by e
 ## License
 
 MIT License
+
+## Tools
+Built with the help of Cursor (powered by OpenAI GPT-4).
