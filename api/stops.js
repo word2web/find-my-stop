@@ -65,8 +65,8 @@ export default async (req, res) => {
       return res.status(404).json({ error: 'No transport stops found' });
     }
 
-    // Transform the TransportAPI data to match frontend expectations
-    const stops = transportData.member.map(stop => ({
+    // Transform and separate the TransportAPI data
+    const allStops = transportData.member.map(stop => ({
       type: "Feature",
       geometry: {
         type: "Point",
@@ -76,12 +76,42 @@ export default async (req, res) => {
         name: stop.name,
         type: stop.type,
         distance: stop.distance ? `${(stop.distance / 1000).toFixed(1)} km` : "Unknown",
-        services: stop.atcocode ? [stop.atcocode] : []
+        services: stop.atcocode ? [stop.atcocode] : [],
+        distanceMeters: stop.distance || 999999 // For sorting
       }
     }));
 
-    console.log('Returning', stops.length, 'stops');
-    return res.status(200).json({ transportStops: stops });
+    // Separate bus stops and train stations
+    const busStops = allStops.filter(stop => stop.properties.type === 'bus_stop');
+    const trainStations = allStops.filter(stop => stop.properties.type === 'train_station');
+
+    // Sort by distance and take the 3 nearest bus stops
+    const nearestBusStops = busStops
+      .sort((a, b) => a.properties.distanceMeters - b.properties.distanceMeters)
+      .slice(0, 3);
+
+    // Get the nearest train station (if any exist)
+    const nearestTrainStation = trainStations
+      .sort((a, b) => a.properties.distanceMeters - b.properties.distanceMeters)
+      .slice(0, 1);
+
+    // Remove the distanceMeters property before sending to frontend
+    const cleanBusStops = nearestBusStops.map(stop => {
+      const { distanceMeters, ...cleanStop } = stop;
+      return cleanStop;
+    });
+
+    const cleanTrainStation = nearestTrainStation.map(stop => {
+      const { distanceMeters, ...cleanStop } = stop;
+      return cleanStop;
+    });
+
+    console.log('Returning', cleanBusStops.length, 'bus stops and', cleanTrainStation.length, 'train station');
+    
+    return res.status(200).json({ 
+      busStops: cleanBusStops,
+      trainStation: cleanTrainStation[0] || null
+    });
 
   } catch (error) {
     console.error('Error fetching transport stops:', error);

@@ -5,12 +5,14 @@ function App() {
   const [postcode, setPostcode] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [transportStops, setTransportStops] = useState([])
+  const [busStops, setBusStops] = useState([])
+  const [trainStation, setTrainStation] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setTransportStops([])
+    setBusStops([])
+    setTrainStation(null)
     setLoading(true)
     
     try {
@@ -22,7 +24,8 @@ function App() {
         throw new Error(data.error || 'Something went wrong')
       }
       
-      setTransportStops(data.transportStops)
+      setBusStops(data.busStops || [])
+      setTrainStation(data.trainStation || null)
     } catch (err) {
       setError(err.message || 'Something went wrong')
     } finally {
@@ -36,6 +39,37 @@ function App() {
 
   const getTransportType = (type) => {
     return type === 'train_station' ? 'Train Station' : 'Bus Stop'
+  }
+
+  const renderTransportItem = (stop, idx) => {
+    const coords = stop.geometry.coordinates
+    const props = stop.properties
+    const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${coords[1]},${coords[0]}`
+    
+    return (
+      <div key={idx} className="transport-item">
+        <div className="transport-header">
+          <span className="transport-icon">{getTransportIcon(props.type)}</span>
+          <div className="transport-info">
+            <h3>{props.name}</h3>
+            <p className="transport-type">{getTransportType(props.type)} • {props.distance}</p>
+          </div>
+        </div>
+        
+        <div className="transport-services">
+          <strong>Services:</strong> {props.services.join(', ')}
+        </div>
+        
+        <a 
+          href={mapsUrl} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="maps-link"
+        >
+          📍 View on Google Maps
+        </a>
+      </div>
+    )
   }
 
   return (
@@ -57,42 +91,37 @@ function App() {
       {loading && <p className="loading">🔍 Searching for transport stops...</p>}
       {error && <p className="error">{error}</p>}
       
-      <div className="transport-list">
-        {transportStops.map((stop, idx) => {
-          const coords = stop.geometry.coordinates
-          const props = stop.properties
-          const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${coords[1]},${coords[0]}`
-          
-          return (
-            <div key={idx} className="transport-item">
-              <div className="transport-header">
-                <span className="transport-icon">{getTransportIcon(props.type)}</span>
-                <div className="transport-info">
-                  <h3>{props.name}</h3>
-                  <p className="transport-type">{getTransportType(props.type)} • {props.distance}</p>
-                </div>
+      {(busStops.length > 0 || trainStation) && (
+        <div className="transport-list">
+          {/* Bus Stops Section */}
+          {busStops.length > 0 && (
+            <div className="transport-section">
+              <h2>🚌 Nearest Bus Stops</h2>
+              <div className="transport-items">
+                {busStops.map((stop, idx) => renderTransportItem(stop, idx))}
               </div>
-              
-              <div className="transport-services">
-                <strong>Services:</strong> {props.services.join(', ')}
-              </div>
-              
-              <a 
-                href={mapsUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="maps-link"
-              >
-                📍 View on Google Maps
-              </a>
             </div>
-          )
-        })}
-      </div>
+          )}
+          
+          {/* Train Station Section */}
+          {trainStation && (
+            <div className="transport-section">
+              <h2>🚆 Nearest Railway Station</h2>
+              <div className="transport-items">
+                {renderTransportItem(trainStation, 'train')}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
       
-      {transportStops.length > 0 && (
+      {(busStops.length > 0 || trainStation) && (
         <div className="results-info">
-          <p>Found {transportStops.length} transport stops near {postcode}</p>
+          <p>
+            Found {busStops.length} bus stop{busStops.length !== 1 ? 's' : ''} 
+            {trainStation && busStops.length > 0 ? ' and ' : ''}
+            {trainStation ? '1 railway station' : ''} near {postcode}
+          </p>
         </div>
       )}
     </div>

@@ -125,8 +125,30 @@ h1 {
 .transport-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
   margin-top: 30px;
+}
+
+.transport-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #e9ecef;
+}
+
+.transport-section h2 {
+  margin: 0 0 20px 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  text-align: left;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 10px;
+}
+
+.transport-items {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .transport-item {
