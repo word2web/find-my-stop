@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import stopsHandler from './api/stops.js';
+import servicesHandler from './api/services.js';
 import 'dotenv/config';
 
 const app = express();
@@ -27,6 +28,27 @@ app.get('/stops', async (req, res) => {
   };
   
   await stopsHandler(mockReq, mockRes);
+});
+
+// Add services route
+app.get('/services', async (req, res) => {
+  // Mock the Vercel serverless function environment
+  const mockReq = {
+    method: req.method,
+    query: req.query,
+    headers: req.headers
+  };
+  
+  const mockRes = {
+    status: (code) => ({
+      json: (data) => res.status(code).json(data),
+      end: () => res.status(code).end()
+    }),
+    setHeader: (name, value) => res.setHeader(name, value),
+    end: () => res.end()
+  };
+  
+  await servicesHandler(mockReq, mockRes);
 });
 
 const PORT = 3001;

@@ -41,7 +41,7 @@ function App() {
     return type === 'train_station' ? 'Train Station' : 'Bus Stop'
   }
 
-  const renderTransportItem = (stop, idx) => {
+  const renderTransportItem = (stop, idx, type = 'bus') => {
     const coords = stop.geometry.coordinates
     const props = stop.properties
     const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${coords[1]},${coords[0]}`
@@ -54,10 +54,6 @@ function App() {
             <h3>{props.name}</h3>
             <p className="transport-type">{getTransportType(props.type)} • {props.distance}</p>
           </div>
-        </div>
-        
-        <div className="transport-services">
-          <strong>Services:</strong> {props.services.join(', ')}
         </div>
         
         <a 
@@ -98,7 +94,7 @@ function App() {
             <div className="transport-section">
               <h2>🚌 Nearest Bus Stops</h2>
               <div className="transport-items">
-                {busStops.map((stop, idx) => renderTransportItem(stop, idx))}
+                {busStops.map((stop, idx) => renderTransportItem(stop, idx, 'bus'))}
               </div>
             </div>
           )}
@@ -108,7 +104,7 @@ function App() {
             <div className="transport-section">
               <h2>🚆 Nearest Railway Station</h2>
               <div className="transport-items">
-                {renderTransportItem(trainStation, 'train')}
+                {renderTransportItem(trainStation, 'train', 'train')}
               </div>
             </div>
           )}
