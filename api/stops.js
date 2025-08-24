@@ -15,14 +15,14 @@ export default async (req, res) => {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { postcode } = req.query;
+  const { postcode, lat, lon } = req.query;
 
-  if (!postcode) {
-    return res.status(400).json({ error: 'Postcode is required' });
+  if (!postcode && (!lat || !lon)) {
+    return res.status(400).json({ error: 'Either postcode or coordinates (lat, lon) are required' });
   }
 
   try {
-    console.log('Geocoding postcode:', postcode);
+    let latitude, longitude;
     
     // Check environment variables
     const appId = process.env.TRANSPORT_API_APP_ID;
@@ -33,18 +33,32 @@ export default async (req, res) => {
       return res.status(500).json({ error: 'API configuration error - missing credentials' });
     }
     
-    // 1. Geocode postcode
-    const geoRes = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}`);
-    const geoData = await geoRes.json();
-    
-    console.log('Geocoding response status:', geoRes.status);
-    
-    if (!geoData.result) {
-      return res.status(400).json({ error: 'Invalid postcode' });
-    }
+    if (postcode) {
+      // 1. Geocode postcode
+      console.log('Geocoding postcode:', postcode);
+      const geoRes = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(postcode)}`);
+      const geoData = await geoRes.json();
+      
+      console.log('Geocoding response status:', geoRes.status);
+      
+      if (!geoData.result) {
+        return res.status(400).json({ error: 'Invalid postcode' });
+      }
 
-    const { latitude, longitude } = geoData.result;
-    console.log('Coordinates:', { latitude, longitude });
+      ({ latitude, longitude } = geoData.result);
+    } else {
+      // Use provided coordinates
+      latitude = parseFloat(lat);
+      longitude = parseFloat(lon);
+      
+      if (isNaN(latitude) || isNaN(longitude)) {
+        return res.status(400).json({ error: 'Invalid coordinates' });
+      }
+      
+      console.log('Using provided coordinates:', { latitude, longitude });
+    }
+    
+    console.log('Final coordinates:', { latitude, longitude });
 
         // 2. Fetch nearby bus stops (5km radius)
         const busUrl = `https://transportapi.com/v3/uk/places.json?lat=${latitude}&lon=${longitude}&radius=5000&type=bus_stop&limit=20&app_id=${appId}&app_key=${appKey}`;

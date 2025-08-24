@@ -70,8 +70,15 @@ h1 {
   flex-wrap: wrap;
 }
 
+.input-group {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
 .postcode-form input {
   padding: 12px 16px;
+  padding-right: 35px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
   font-size: 16px;
@@ -83,6 +90,71 @@ h1 {
   outline: none;
   border-color: #3498db;
   box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.icon-only-btn {
+  /* Reset global button styles */
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  font: inherit !important;
+  color: inherit !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+
+  /* Our custom icon button styling */
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  /* Smooth transitions */
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.icon-only-btn:hover,
+.icon-only-btn:focus {
+  background-color: rgba(156, 163, 175, 0.1) !important;
+  color: #4b5563;
+}
+
+.icon-only-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.icon-only-btn:hover svg,
+.icon-only-btn:focus svg {
+  transform: scale(1.1);
+}
+
+.icon-only-btn:disabled {
+  color: #d1d5db !important;
+  cursor: not-allowed;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  color: #6b7280; /* Matches icon color */
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .postcode-form button {
@@ -238,8 +310,14 @@ h1 {
     align-items: center;
   }
   
+.input-group {
+  position: relative;
+  overflow: visible; /* Prevent clipping */
+}
+  
   .postcode-form input {
     min-width: 250px;
+    width: 100%;
   }
   
   .transport-header {
